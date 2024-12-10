@@ -6,6 +6,8 @@
     <meta property="or:url" content="https://lumimoria.com/">
     <meta name="or:title" property="og:title" content="Lumimoria">
     <title>Lumimoria</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
 
     <style>
 
@@ -2536,23 +2538,20 @@ initializeSystemInterface() {
     }
 
     async developImage(index) {
-        this.isDeveloping = true;
+    this.isDeveloping = true;
     
-    //
+    // 重置所有帧
     this.frames.forEach(frame => {
-        //
         frame.classList.remove('visible');
         frame.classList.remove('developing-frame');
         frame.classList.remove('developing');
         
-        //
         frame.style.visibility = 'hidden';
         frame.style.opacity = '0';
         frame.style.display = 'none';
         frame.style.transform = 'none';
         frame.style.filter = 'none';
         frame.style.margin = '0';
-        
 
         const effects = frame.querySelectorAll('.grain-overlay, .chemical-wave, .light-leak, .development-strip');
         effects.forEach(effect => effect.remove());
@@ -2563,12 +2562,18 @@ initializeSystemInterface() {
     frame.style.visibility = 'visible';
     frame.style.opacity = '0';
     
+    // 设置内容可见
+    const content = frame.querySelector('.content');
+    if (content) {
+        content.style.visibility = 'visible';
+        content.style.opacity = '1';
+        content.style.display = 'block';
+    }
 
     this.mainContent.scrollTo({
         left: frame.offsetLeft,
         behavior: 'smooth'
     });
-    
 
     frame.classList.add('developing');
 
@@ -2578,7 +2583,6 @@ initializeSystemInterface() {
     frame.style.transform = 'scale(1.02)';
     frame.style.visibility = 'visible';
     frame.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
-
 
     const grainOverlay = document.createElement('div');
     grainOverlay.className = 'grain-overlay';
@@ -3282,13 +3286,13 @@ PolaroidCamera.prototype.toggleMode = function(button) {
             setTimeout(() => readingNav.remove(), 300);
         }
 
-        // 重置容器状态
+        //
         this.contentContainer.style.visibility = 'visible';
         this.contentContainer.style.filter = 'none';
         this.contentContainer.classList.add('viewed');
         this.contentContainer.classList.remove('slide-up');
 
-        // 重置所有帧状态
+        //
         this.frames.forEach(frame => {
             frame.style.visibility = 'hidden';
             frame.style.opacity = '0';
@@ -3381,6 +3385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(blocker);
     }
 });
+
 
 
         </script>
