@@ -1,0 +1,3391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="or:url" content="https://lumimoria.com/">
+    <meta name="or:title" property="og:title" content="Lumimoria">
+    <title>Lumimoria</title>
+
+    <style>
+
+
+
+
+@font-face {
+    font-family: 'Junicode';
+    src: url('junicode-boldcondensed.woff2') format('woff2'),
+         url('junicode-boldcondensed.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'HelveticaNeueCyr';
+    src: url('HelveticaNeueCyr-Roman.woff2') format('woff2'),
+         url('HelveticaNeueCyr-Roman.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+p, blockquote, h1, h2, .content, .article-preview {
+    font-family: 'HelveticaNeueCyr', Helvetica, Arial, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    position: relative;
+    overflow-anchor: none;
+}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: white;
+            min-height: 100vh;
+            font-family: monospace;
+        }
+
+        .camera-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: 1px solid #000;
+            pointer-events: none;
+        }
+
+        .viewfinder {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: #000;
+            z-index: 100;
+        }
+
+        .fold-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .fold-line {
+            position: absolute;
+            background: #000;
+            opacity: 0.2;
+        }
+
+        .fold-line-1 {
+            top: 80px;
+            left: 350px;
+            width: 1px;
+            height: calc(100% - 80px);
+            transform: rotate(2deg);
+        }
+
+        .fold-line-2 {
+            top: 80px;
+            right: 350px;
+            width: 1px;
+            height: calc(100% - 80px);
+            transform: rotate(-2deg);
+        }
+
+        .content-container {
+            display: grid;
+    grid-template-columns: 350px 1fr;
+    grid-template-rows: 80px 1fr;
+    min-height: 100vh;
+    border: 1px solid #000;
+    filter: blur(10px);
+    visibility: hidden;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+    will-change: transform;
+    
+        }
+
+        .content-container.viewed {
+    filter: none;
+    visibility: visible;
+    position: relative;
+    min-height: 100vh;
+    background:transparent;
+}
+
+.content-frame h2,
+.content-frame p {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+.content-container.viewed::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: url('background.svg') no-repeat;
+    background-size: 1800px auto;
+    background-position: center;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 1;
+}
+
+.menu-bar, .sidebar, .main-content {
+    position: relative;
+    z-index: 2;
+
+}
+
+body.reading-mode .content-container.viewed::before {
+    display: none;
+}
+
+        .content-container.slide-up {
+    transform: translateY(-150px);
+}
+
+        .content-container.viewed {
+    filter: none;
+    visibility: visible;
+}
+
+        .menu-bar {
+            grid-column: 1 / -1;
+            border-bottom: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .sidebar {
+    border-right: 1px solid #000;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    background: white;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.5s ease;
+        }
+
+
+
+        .article-preview {
+            border: 1px solid #000;
+            margin-bottom: 15px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .article-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-left: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .main-content {
+    position: absolute;
+    display: flex;
+    left: 350px;
+    right: 0;
+    top: 80px;
+    bottom: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    gap: 40px;
+    padding: 40px;
+}
+
+.content-frame {
+    flex: 0 0 calc(100vw - 450px);
+    border: 1px solid #000;
+    padding: 40px;
+    scroll-snap-align: start;
+    height: calc(100vh - 160px);
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    margin: 0;
+}
+
+
+        .main-content::-webkit-scrollbar {
+    display: none;
+}
+
+
+        .content-frame.developing {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+        .content-frame.visible {
+    visibility: visible;
+    opacity: 1;
+    display: block !important;
+    
+}
+
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .control-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border: 1px solid #000;
+            border-radius: 50%;
+        }
+
+        .development-indicator {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 2px;
+            height: 200px;
+            border: 1px solid #000;
+        }
+
+        .mechanical-folds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .fold {
+            position: absolute;
+            background: #000;
+            height: 1px;
+        }
+
+        .fold:nth-child(1) { top: 25%; left: 0; width: 100%; }
+        .fold:nth-child(2) { top: 50%; left: 0; width: 100%; }
+        .fold:nth-child(3) { top: 75%; left: 0; width: 100%; }
+
+        .horizontal-scroll {
+        position: relative;
+        width: calc(100% - 350px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding: 20px;
+    }
+
+    .article-cards {
+        display: inline-flex;
+        gap: 40px;
+        padding: 20px;
+    }
+
+    .article-card {
+        width: 300px;
+        min-width: 300px;
+        height: 400px;
+        border: 1px solid #000;
+        position: relative;
+        overflow: hidden;
+        transition: width 0.3s ease;
+        cursor: pointer;
+        white-space: normal;
+    }
+
+    .article-card:hover {
+        width: 600px;
+    }
+
+    .article-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .article-card:hover .article-content {
+        opacity: 1;
+    }
+
+    .mechanical-marker {
+        position: absolute;
+        width: 20px;
+        height: 1px;
+        background: #000;
+        right: 20px;
+        top: 20px;
+    }
+
+
+.camera-mechanism {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.content-frame {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.content-frame::-webkit-scrollbar {
+    display: none;
+}
+
+.content-frame {
+    margin: 0 !important;
+    margin-right: 0 !important;
+}
+
+.content-frame h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    line-height: 1.2;
+}
+
+.content-frame h2 {
+    font-size: 24px;
+    font-weight: normal;
+    margin: 20px 0 25px;
+    line-height: 1.4;
+}
+
+.content-frame p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.content-frame .content {
+    max-width: 100%;
+    height: auto;
+    padding-right: 20px;
+}
+
+
+@keyframes developingProcess {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+}
+
+.article-preview {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.article-preview:hover {
+    transform: translateX(5px);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.article-preview.active {
+    background: rgba(0, 0, 0, 0.08);
+    border-left: 3px solid #000;
+}
+
+.article-preview:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 10px;
+    height: 2px;
+    background: #000;
+    transform: translateY(-50%) scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.article-preview.active:before {
+    transform: translateY(-50%) scaleX(1);
+}
+
+
+.mechanical-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mechanical-indicator.active {
+    opacity: 1;
+}
+
+
+.viewfinder-frame {
+    position: absolute;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-radius: 2px;
+}
+
+.sx70-decorative-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.viewfinder-line {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.fold-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.fold-line {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.1);
+    transform-origin: top left;
+}
+
+.fold-line-1 {
+    top: 80px;
+    left: 350px;
+    width: 1px;
+    height: calc(100% - 80px);
+    transform: rotate(2deg);
+}
+
+.fold-line-2 {
+    top: 80px;
+    right: 350px;
+    width: 1px;
+    height: calc(100% - 80px);
+    transform: rotate(-2deg);
+}
+
+.fold-line-3 {
+    top: 150px;
+    left: 400px;
+    width: calc(100% - 800px);
+    height: 1px;
+    transform: rotate(-1deg);
+}
+
+.fold-line-4 {
+    bottom: 150px;
+    left: 400px;
+    width: calc(100% - 800px);
+    height: 1px;
+    transform: rotate(1deg);
+}
+
+
+.main-content::before {
+    content: '';
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(0, 0, 0, 0.1),
+        transparent
+    );
+}
+
+.mechanical-lines {
+    position: fixed;
+    right: 0;
+    top: 80px;
+    width: 200px;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.1;
+}
+
+.measurement-marks {
+    position: fixed;
+    top: 100px;
+    right: 40px;
+    width: 2px;
+    height: 200px;
+    background: rgba(0,0,0,0.05);
+}
+
+.measurement-marks::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    width: 12px;
+    height: 100%;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 9px,
+        rgba(0,0,0,0.1) 9px,
+        rgba(0,0,0,0.1) 10px
+    );
+}
+
+.metallic-edges {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: linear-gradient(45deg,
+        transparent 0%,
+        rgba(255,255,255,0.05) 50%,
+        transparent 100%
+    );
+}
+
+.camera-markings {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-family: monospace;
+    font-size: 10px;
+    color: rgba(0,0,0,0.2);
+}
+
+.camera-markings::before {
+    content: 'SX-70';
+    letter-spacing: 2px;
+}
+
+.sx70-folding-lines {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.folding-line {
+    position: absolute;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0,0,0,0.06),
+        transparent
+    );
+}
+
+.folding-diagonal-1 {
+    top: 0;
+    left: 30%;
+    width: 1px;
+    height: 100%;
+    transform: rotate(15deg);
+}
+
+.folding-diagonal-2 {
+    top: 0;
+    right: 30%;
+    width: 1px;
+    height: 100%;
+    transform: rotate(-15deg);
+}
+
+.folding-minor-1 {
+    top: 25%;
+    left: 20%;
+    width: 60%;
+    height: 1px;
+    transform: rotate(-5deg);
+}
+
+.folding-minor-2 {
+    bottom: 25%;
+    left: 20%;
+    width: 60%;
+    height: 1px;
+    transform: rotate(5deg);
+}
+
+.viewfinder-frame {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 120px;
+    border: 2px solid rgba(0,0,0,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.viewfinder-frame::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 100px;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 2px;
+}
+
+.sx70-interface-elements {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    width: 260px;
+    height: 140px;
+    pointer-events: auto;
+    z-index: 4;
+    background: url('part.png');
+    background-size: cover;
+    background-position: center;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom left;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.content-container.viewed + .sx70-interface-elements,
+.content-container.viewed ~ .sx70-interface-elements {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.3s;
+}
+
+.sx70-interface-elements.collapsed {
+    width: 60px;
+    height: 60px;
+    background: url('download.png');
+    background-size: cover;
+    background-position: center;
+    transform: perspective(800px) rotateX(0deg) scale(0.95);
+    border: none;
+}
+
+.sx70-interface-elements.collapsed::before,
+.sx70-interface-elements.collapsed::after {
+    display: none;
+}
+
+.sx70-mark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+}
+
+.sx70-interface-elements.collapsed .sx70-mark {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sx70-interface-elements:hover {
+    transform: perspective(800px) rotateX(2deg) scale(1.02);
+}
+
+.sx70-interface-elements.collapsed:hover {
+    background-image: url('hover.png');
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.sx70-interface-elements.collapsed:hover .sx70-mark {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.sx70-interface-elements.scroll-active {
+    transform: perspective(800px) rotateX(5deg) scale(0.95);
+}
+
+.menu-bar .camera-model {
+    font-size: 18px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: inline-flex;
+    letter-spacing: normal;
+    position: relative;
+    padding: 4px 8px;
+}
+
+.camera-model::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(
+        to right,
+        #f02a14,
+        #ff8400,
+        #ffd500,
+        #3cb54a,
+        #0061b2
+    );
+    transition: width 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.camera-model:hover::after {
+    width: 100%;
+}
+
+.camera-model, .settings {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: normal;
+    position: relative;
+    padding: 4px 8px;
+}
+
+.camera-model span {
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-shadow: none;
+    position: relative;
+}
+
+.camera-model:hover span {
+    text-shadow: 
+        2px 2px 8px rgba(0, 0, 0, 0.2),
+        -1px -1px 0 rgba(255, 255, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+@keyframes jitter {
+    0%, 100% { transform: translateY(-1px) rotate(0deg); }
+    25% { transform: translateY(-1px) rotate(0.5deg); }
+    75% { transform: translateY(-1px) rotate(-0.5deg); }
+}
+
+.camera-model:hover span {
+    animation: jitter 0.2s infinite;
+    filter: brightness(1.2);
+}
+
+.menu-bar .camera-model:hover {
+    font-style: italic;
+    letter-spacing: 3px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+}
+
+@keyframes initialJitter {
+    0% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-0.5px) rotate(0.2deg); }
+    50% { transform: translateY(0.3px) rotate(-0.2deg); }
+    75% { transform: translateY(-0.3px) rotate(0.1deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+.camera-model:hover span {
+    animation: initialJitter 0.3s ease-out;
+    display: inline-block;
+    transform-origin: center;
+}
+
+.camera-model:hover span:nth-child(2n) {
+    animation-delay: 0.05s;
+}
+
+.camera-model:hover span:nth-child(3n) {
+    animation-delay: 0.1s;
+}
+
+.camera-model:hover span {
+    animation-iteration-count: 1;
+}
+
+.camera-model:hover span:nth-child(4n + 1) { color: #f02a14; }
+.camera-model:hover span:nth-child(4n + 2) { color: #ff8400; }
+.camera-model:hover span:nth-child(4n + 3) { color: #ffd500; }
+.camera-model:hover span:nth-child(4n + 4) { color: #3cb54a; }
+.camera-model:hover span:nth-child(4n + 5) { color: #0061b2; }
+
+.viewfinder-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+}
+
+.viewfinder-container * {
+    pointer-events: none;
+}
+
+.viewfinder-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.8s ease;
+}
+
+.viewfinder-background.blurred {
+    opacity: 1;
+}
+
+.viewfinder-background.blurred .viewfinder-image {
+    background-image: url('_ (1).png');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    filter: blur(25px) brightness(1.2);
+    opacity: 0.45;
+    mix-blend-mode: overlay;
+    transition: all 0.8s ease;
+}
+
+.viewfinder-background.focused {
+    opacity: 0;
+}
+
+.viewfinder-background.focused .viewfinder-image {
+    background-image: url('2.png');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    opacity: 0.45;
+    mix-blend-mode: overlay;
+}
+
+
+.interaction-blocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 998;
+    pointer-events: auto;
+}
+
+.viewfinder-toggle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 3px 6px;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    background: white;
+    border: 1px solid #000;
+    cursor: pointer;
+    z-index: 1000;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+.viewfinder-toggle:hover {
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    transform: translate(calc(-50% - 1px), calc(-50% - 1px));
+}
+
+.viewfinder-toggle:active {
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 0 rgba(0,0,0,1);
+}
+
+.viewfinder-hidden {
+    display: none;
+}
+
+.viewfinder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+}
+
+.frame-border {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 85vh;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.info-bar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Junicode", monospace;
+    font-weight: bold;
+    font-stretch: condensed;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.info-bar div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-bar div:first-child {
+    font-weight: 500;
+    opacity: 0.9;
+    animation: steadyBlink 4s infinite;
+}
+
+
+.parameters, .param, .rec-indicator {
+    font-family: "Junicode", monospace;
+    font-weight: bold;
+    font-stretch: condensed;
+}
+
+.parameters {
+    display: flex;
+    gap: 12px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.param {
+    position: relative;
+    opacity: 0.85;
+    animation: parameterFloat 3s infinite;
+    animation-delay: var(--delay, 0s);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.rec-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.rec-dot {
+    width: 6px;
+    height: 6px;
+    background: #ff3b30;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(255, 59, 48, 0.5);
+    animation: recBlink 2s infinite;
+}
+
+@keyframes steadyBlink {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes parameterFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.85; }
+    50% { transform: translateY(-1px); opacity: 1; }
+}
+
+@keyframes recBlink {
+    0%, 100% { opacity: 1; box-shadow: 0 0 4px rgba(255, 59, 48, 0.5); }
+    50% { opacity: 0.3; box-shadow: 0 0 2px rgba(255, 59, 48, 0.3); }
+}
+
+.focus-target {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+}
+
+.focus-cross {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.focus-cross.horizontal {
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+
+.focus-cross.vertical {
+    left: 50%;
+    width: 1px;
+    height: 100%;
+}
+
+.corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+.corner.top-left {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.corner.top-right {
+    top: -2px;
+    right: -2px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.corner.bottom-left {
+    bottom: -2px;
+    left: -2px;
+    border-right: none;
+    border-top: none;
+}
+
+.corner.bottom-right {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.reading-mode-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('edit28.png');
+    background-size: cover;
+    background-position: center;
+    filter: blur(10px) brightness(1);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+    display: none;
+}
+
+body.reading-mode .reading-mode-background {
+    display: block;
+    opacity: 0.4;
+}
+
+body.reading-mode .sx70-decorative-elements,
+body.reading-mode .sx70-advanced-elements,
+body.reading-mode .sx70-interface-elements,
+body.reading-mode .controls,
+body.reading-mode .development-indicator {
+    display: none;
+}
+
+body:not(.reading-mode) .content-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important;
+}
+
+
+body.reading-mode .content-container {
+    grid-template-columns: 1fr !important;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+
+}
+
+
+body.reading-mode .sidebar {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 20px;
+    border-radius: 0 10px 10px 0;
+    z-index: 100;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.reading-mode-nav .article-preview.active {
+    opacity: 1;
+    border-left: 2px solid #000 !important;
+    background: none;
+}
+
+
+.reading-mode-nav .article-preview:hover {
+    opacity: 0.8;
+    transform: translateX(5px);
+}
+
+
+body.reading-mode .sidebar:hover {
+    opacity: 1;
+}
+
+body.reading-mode .mechanical-folds,
+body.reading-mode .fold,
+body.reading-mode .fold-lines,
+body.reading-mode .mechanical-marker {
+    display: none !important;
+}
+
+
+body.reading-mode .main-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible !important;
+    padding: 20px 0;
+    gap: 40px;
+}
+
+body.reading-mode .main-content::-webkit-scrollbar {
+    display: none;
+}
+
+body.reading-mode .content-frame {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    position: relative !important;
+    left: auto !important;
+    margin: 0 0 40px 0 !important;
+    padding: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.reading-mode .content-frame .content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    will-change: transform, opacity;
+}
+
+body.reading-mode .content-frame .content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body.reading-mode .content-frame::-webkit-scrollbar {
+    display: none;
+}
+
+html, body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body.reading-mode .content-frame h1 {
+    font-size: 2.5em;
+    margin-bottom: 1em;
+}
+
+body.reading-mode .content-frame p {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #333;
+}
+
+body.reading-mode .content-container {
+    grid-template-columns: 1fr !important;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px;
+    position: relative;
+    overflow: visible !important;
+    height: auto !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.reading-mode-nav {
+    position: fixed;
+    left: -300px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 250px;
+    padding: 40px 20px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+
+
+}
+
+body.reading-mode .content-frame h1 {
+    font-size: 24px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+body.reading-mode .content-frame h2 {
+    font-size: 18px;
+    line-height: 1.3;
+    margin-bottom: 15px;
+}
+
+body.reading-mode .content-frame p {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+body.reading-mode .content-frame {
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+
+.reading-mode-nav .article-preview {
+    border: none !important;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+
+    opacity: 0.6;
+}
+
+.reading-mode-nav .article-preview.visible {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.reading-mode-nav .article-preview:first-child {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.reading-mode-nav .article-preview {
+    border: 2px solid #000;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.reading-mode-nav.visible {
+    left: 0;
+}
+
+body.reading-mode .sidebar {
+    display: none;
+}
+
+
+.content-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    grid-template-rows: 80px 1fr;
+}
+
+.main-content {
+    left: 350px;
+    width: calc(100vw - 350px);
+}
+
+
+
+@media screen and (max-width: 1024px) {
+    .content-container {
+        grid-template-columns: 250px 1fr;
+    }
+
+    .main-content {
+        left: 250px;
+        width: calc(100vw - 250px);
+    }
+
+    .content-frame {
+        width: calc(100vw - 300px);
+        min-width: calc(100vw - 300px);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .content-container {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 80px;
+        bottom: 0;
+        width: 250px;
+        background: white;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        left: 0;
+        width: 100vw;
+        padding: 20px;
+
+    }
+
+    .content-frame {
+        width: 100%;
+        min-width: 100%;
+        margin-right: 0;
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+    }
+}
+
+
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+    display: none !important;
+}
+
+
+.main-content,
+.content-frame {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    overflow: -moz-scrollbars-none;
+}
+
+.main-content::-webkit-scrollbar,
+.content-frame::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+}
+
+
+
+@media screen and (max-width: 768px) {
+    body, html {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    body::-webkit-scrollbar,
+    html::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .main-content,
+    .content-frame {
+        overflow-y: scroll !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .viewfinder-background {
+        width: 80%;
+        height: 60%;
+    }
+
+    .frame-border {
+        width: 95vw;
+        height: 80vh;
+    }
+
+    .info-bar {
+        font-size: 10px;
+        gap: 4px;
+    }
+
+    .parameters {
+        gap: 6px;
+    }
+
+    .viewfinder-toggle {
+        padding: 2px 4px;
+        font-size: 14px;
+    }
+
+    .sx70-interface-elements {
+        width: 200px;
+        height: 150px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body.reading-mode .content-container {
+        padding: 20px;
+    }
+
+    body.reading-mode .main-content {
+        padding: 10px 0;
+    }
+
+    body.reading-mode .content-frame {
+        padding: 15px !important;
+    }
+
+    .reading-mode-nav {
+        width: 200px;
+    }
+}
+
+.content-frame h1 {
+    position: relative;
+    cursor: pointer;
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-frame h1::before {
+    content: '• • • • • • • • • •';
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    font-size: 32px;
+    background-image: linear-gradient(
+        90deg,
+        #f02a14 0%,
+        #ff8400 20%,
+        #ffd500 40%,
+        #3cb54a 60%,
+        #0061b2 80%,
+        #f02a14 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 500% 100%;
+    animation: rainbow 4s linear infinite;
+    z-index: 1;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% center; }
+    100% { background-position: 100% center; }
+}
+
+.content-frame h1::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.content-frame h1:hover {
+    color: transparent;
+}
+
+.content-frame h1:hover::before {
+    opacity: 1;
+}
+
+.reading-develop-button {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-family: monospace;
+    font-size: 16px;
+    color: #000;
+    background: white;
+    border: 1px solid #000;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+
+.reading-develop-button:hover {
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    transform: translate(calc(-50% - 1px), calc(-50% - 1px));
+}
+
+.reading-develop-button:active {
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 0 rgba(0,0,0,1);
+}
+
+.content-frame h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    transform-origin: left center;
+    transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+    display: inline-block;
+    width: auto;
+    padding: 0;
+    margin: 20px 0 25px;
+}
+
+.content-frame h2:hover {
+    font-style: italic;
+    transform: scaleX(0.85);
+    cursor: default;
+}
+
+
+
+.reading-light-leak {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(255, 220, 100, 0.1) 25%,
+        transparent 50%,
+        rgba(255, 100, 100, 0.1) 75%,
+        transparent 100%
+    );
+    mix-blend-mode: screen;
+    opacity: 0;
+    animation: readingLightLeak 1.2s ease-out;
+}
+
+@keyframes readingLightLeak {
+    0% { opacity: 0; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0; }
+}
+
+.reading-mode-nav .article-preview {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-frame .content {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.reading-light-leak {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(255, 220, 100, 0.1) 25%,
+        transparent 50%,
+        rgba(255, 100, 100, 0.1) 75%,
+        transparent 100%
+    );
+    mix-blend-mode: screen;
+    opacity: 0;
+    animation: readingLightLeak 1.2s ease-out;
+    pointer-events: none;
+}
+
+
+    </style>
+</head>
+<body>
+
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height">
+    
+    <div class="reading-mode-background"></div>
+
+
+    <div class="viewfinder-container">
+        <div class="viewfinder-background blurred">
+            <div class="viewfinder-image"></div>
+        </div>
+        <div class="viewfinder-background focused">
+            <div class="viewfinder-image"></div>
+        </div>
+        <div class="viewfinder-overlay"></div>
+        <div class="frame-border">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+    
+            <div class="info-bar">
+                <div>HD</div>
+                <div class="parameters">
+                    <span class="param" style="--delay: 0s">[+]</span>
+                    <span class="param" style="--delay: 0.1s">[-]</span>
+                    <span class="param" style="--delay: 0.2s">305</span>
+                    <span class="param" style="--delay: 0.3s">79</span>
+                    <span class="param" style="--delay: 0.4s">><</span>
+                    <span class="param" style="--delay: 0.5s">/\</span>
+                    <span class="param" style="--delay: 0.6s">[|||]</span>
+                </div>
+                <div class="rec-indicator">
+                    <div class="rec-dot"></div>
+                    <span id="timecode">REC 00:00:00</span>
+                </div>
+            </div>
+    
+            <div class="focus-target">
+                <div class="focus-cross horizontal"></div>
+                <div class="focus-cross vertical"></div>
+            </div>
+    
+        </div>
+    </div>
+    <button class="viewfinder-toggle">VIEW</button>
+    
+
+    <div class="sx70-interface-elements">
+
+
+
+        <div class="mechanical-lines">
+            <div class="mechanical-line"></div>
+            <div class="mechanical-line"></div>
+            <div class="mechanical-line"></div>
+        </div>
+        
+        <div class="gear-system">
+            <div class="gear gear-large"></div>
+            <div class="gear gear-medium"></div>
+            <div class="gear gear-small"></div>
+        </div>
+        
+        <div class="optical-system">
+            <div class="lens lens-outer"></div>
+            <div class="lens lens-inner"></div>
+        </div>
+        
+    </div>
+        
+
+<div class="sx70-decorative-elements">
+
+    <div class="viewfinder-line"></div>
+    <div class="fold-lines">
+        <div class="fold-line fold-line-1"></div>
+        <div class="fold-line fold-line-2"></div>
+        <div class="fold-line fold-line-3"></div>
+        <div class="fold-line fold-line-4"></div>
+    </div>
+    
+    <div class="corner-accents">
+        <div class="corner-accent top-left"></div>
+        <div class="corner-accent top-right"></div>
+        <div class="corner-accent bottom-left"></div>
+        <div class="corner-accent bottom-right"></div>
+    </div>
+</div>
+
+
+
+<div class="sx70-advanced-elements">
+    <div class="sx70-folding-lines">
+        <div class="folding-line folding-diagonal-1"></div>
+        <div class="folding-line folding-diagonal-2"></div>
+        <div class="folding-line folding-minor-1"></div>
+        <div class="folding-line folding-minor-2"></div>
+    </div>
+    
+    <div class="viewfinder-frame"></div>
+    
+    <div class="prism-decoration">
+        <div class="prism-face prism-face-1"></div>
+        <div class="prism-face prism-face-2"></div>
+    </div>
+    
+    <div class="mechanical-seams">
+        <div class="seam seam-horizontal" style="top: 20%"></div>
+        <div class="seam seam-horizontal" style="bottom: 20%"></div>
+        <div class="seam seam-vertical" style="left: 30%"></div>
+        <div class="seam seam-vertical" style="right: 30%"></div>
+        <div class="seam-arc" style="top: 10%; left: 10%; width: 100px; height: 100px"></div>
+        <div class="seam-arc" style="bottom: 10%; right: 10%; width: 100px; height: 100px"></div>
+    </div>
+    
+    <div class="leather-enhanced"></div>
+    <div class="lens-cover"></div>
+    <div class="exposure-meter">
+        <div class="exposure-scale"></div>
+    </div>
+</div>
+
+
+
+<div class="content-container">
+    <div class="menu-bar">
+        <div class="camera-model" onclick="window.open('Photography and Its Violations.pdf', '_blank')">
+            <span>P</span><span>H</span><span>O</span><span>T</span><span>O</span><span>G</span><span>R</span><span>A</span><span>P</span><span>H</span><span>Y</span>
+            <span>A</span><span>N</span><span>D</span>
+            <span>I</span><span>T</span><span>S</span>
+            <span>V</span><span>I</span><span>O</span><span>L</span><span>A</span><span>T</span><span>I</span><span>O</span><span>N</span><span>S</span>
+        </div>
+        <div class="settings">INTERVIEW WITH JOHN ROBERTS</div>
+    </div>
+
+    <div class="sidebar">
+        <div class="article-preview">
+            <h3>Defining Violation</h3>
+            <span class="date">Frame 01/06</span>
+        </div>
+        <div class="article-preview">
+            <h3>Ethics of Power</h3>
+            <span class="date">Frame 02/06</span>
+        </div>
+        <div class="article-preview">
+            <h3>Documentary Practice</h3>
+            <span class="date">Frame 03/06</span>
+        </div>
+        <div class="article-preview">
+            <h3>Social Functions</h3>
+            <span class="date">Frame 04/06</span>
+        </div>
+        <div class="article-preview">
+            <h3>Digital Age Impact</h3>
+            <span class="date">Frame 05/06</span>
+        </div>
+        <div class="article-preview">
+            <h3>Representation & Violence</h3>
+            <span class="date">Frame 06/06</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Defining Photographic Violation</h1>
+            <div class="content">
+                <h2>Q: What do you mean by photography and its violations? How is photography violated?</h2>
+                <p>Well, the title is deliberately ambiguous. By violation I do not mean the capacity of photography to objectify its subjects, nor am I referring directly—although it is implied—to those cultural and political forces lined up against its interests.</p>
+                <p>Rather violation refers here to what photography is able to do in an expressly productive way, given what I call in the book, its social ontology or "unquenchable social intrusiveness and invasiveness."</p>
+                <p>By this I mean, what makes photography worth returning to as a philosophical and political problem is, in fact, the thing that has always threatened its desire to be thought highly of as an art or would be "objective" medium: namely its unstable and destabilizing character.</p>
+                <p>That is, photography is not just a medium of report or an aesthetic transformation of the world, but a specific act of disclosure, in which its rebarbative powers—of disruption, denaturalization and the ruination of self-identity—secure photography's infinite capacity for truth telling.</p>
+                <p>Hence when I talk of violation I'm addressing how photography's intrusive "pointing to" opens up a space of conceptual reflection on the relations between the photograph's subjects and objects and the social world in which they are embedded.</p>
+            </div>
+        </div>
+
+            <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Ethics and Power Relations</h1>
+            <div class="content">
+                <h2>Q: Isn't this a defense of photographic objectification through the back door though?</h2>
+                <p>By defending the violating force of photography I am not thereby defending the power of the photograph to represent without consequence. Rather, I am arguing that violation is what is immanent to the photographic process, and therefore, if the photographer is committed to photography's rebarbative powers, he or she must at least recognize this as a constitutive aspect of the social legibility of the photographic act.</p>
+                <p>Thus the photographer is always faced, given the circumstances under which he or she photographs, with an ethical choice: to secure or advance photography's truth claims on the basis of these powers of violation of the diminishment or veiling of these powers in order to either project those in power or to "protect" the integrity of persons without power or the right of reply.</p>
+                <p>But in a necessary dialectical move, it is precisely those without power, who, in their subjection, are able to speak to—to violate the self-identity of—those with power.</p>
+            </div>
+        </div>
+
+
+        <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Evolution of Documentary Practice</h1>
+            <div class="content">
+                <h2>Q: Isn't this just an old-fashioned commitment to documentary photography?</h2>
+                <p>Yes, classical documentary no longer exists in its traditional political forms. This has much to do with the current neoliberal settlement, which has been the driving force in the new dispersive conditions of image production and reception under digitalization and network culture's compression and attenuation of cognitive (and political) attention, what I call the expansion of the "non-symbolic".</p>
+                <p>But it also has much to with the critique of representation-as-truth since the 1970s, which has weakened the social bond between documentary practice, political critique and political praxis; the radical critique of representation since the 1970s has found a ready reception in the neoliberal valorization of multiplatform image production and continuous image flow.</p>
+            </div>
+        </div>
+
+
+        <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Photography as Social Substance</h1>
+            <div class="content">
+                <h2>Q: But how does this connect precisely with what you call the destabilizing character of photography?</h2>
+                <p>Well in light of the above we need to shift our perspective, and look at photography as a kind of social substance—in the Spinozan/Hegelian sense—through which people encounter the world. That is, photography in its various social-relational modes is one of the primary means through which individuals inhabit, experience and reflect on the world in which they find themselves, but also equally important, experience and reflect on those worlds in which they don't find themselves.</p>
+                <p>And this is crucial in understanding how the demise of documentary practice is quite separate from photography's powers of socialization. Despite the neoliberal destitution of public culture, despite the retreat of documentary practice, and despite the expansion of the non-symbolic as a condition of the media image's reified flow and popular photography's reflection of the dominant culture, the egalitarian "excess" of photography remains a living force globally, arising where there is a collective need for the social document.</p>
+                <p>Consequently, this is why the photo snapshot is not just unassimilable to the histories of documentary practice—and therefore challenges us to think what documentary culture might mean today—but to the dominant aesthetic accounts of photography, that would reduce photography to art alone, as in the expansion of the staged, figural image over the last 30 years, and the rise of the large-scale post-production museum photograph.</p>
+            </div>
+        </div>
+
+        <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Photography in the Digital Age</h1>
+            <div class="content">
+                <h2>Q: How does this relate to the current digital environment?</h2>
+                <p>The social ontology of photography is much bigger than the historic legacies and the particular forms of documentary practice, and therefore, has a productive part to play in the new network conditions of digital production. This is because the infinitely intrusive and destabilizing character of photographic violation invites us to think of the social function of photography more creatively from the local and global position of the non-professional producer, rather than from within the shifting fortunes photographic tradition itself.</p>
+                <p>Photography may possess many professional and instrumental modes and functions, (micro-scientific, aerial-topographic, pornographic-affective, state-coercive, commercial-appellative), but its primary function rests on the mass production of the infinite reproduction of social appearances and relations on an egalitarian basis, obviously vastly extended in the age of the smart phone.</p>
+                <p>However, this process of socialization is not democracy. This does not mean that photography is now a mass democratic form, as if the popular production of photography was directed towards the scrutiny of public institutions and ruling ideologies. Mass (digital) photography is no less subject to the conventional modes of self-display and self-validation, as commercial image culture itself. But in its ease of production and in its capacity for social exchange it is wholly egalitarian in practice and ethos.</p>
+            </div>
+        </div>
+
+        <div class="content-frame">
+            <div class="mechanical-folds">
+                <div class="fold"></div>
+                <div class="fold"></div>
+            </div>
+            <h1>Representation and Violence</h1>
+            <div class="content">
+                <h2>Q: But in defending violation in these terms aren't you licensing the worst aspects of Internet culture?</h2>
+                <p>As I have just mentioned, representational intolerance is not just a license to show "what cannot be shown" without thought of context or situation. Similarly photography's principle of violation is not an open invitation to the "worst" as the heightened power of the photo-document's truth-telling powers.</p>
+                <p>So violation maybe a constitutive force of photography's social-relational function, but it is always subject to the responsibilities of discursive framing. Photography's violation is posed between the exposure of the body to the truth of abjection and to its defense against such intrusion. This is paramount.</p>
+                <p>Yet if we readily accept the strictures against violation then we also accept the notion that the effects of violence are unrepresentable, and we thereby concede symbolic ground to the perpetrators of state violence. And this means that those photographers who expose such systemic violence are left with less opportunity to mediate the effects of violence, critically and politically, than before.</p>
+                <p>So representational intolerance is not something photographers want to give up easily, for photography's inhuman violation of the integrity of its subjects is central to its ethical and political charge. Without this photography loses all sense of its interruptive and counter-symbolic function in the world.</p>
+
+<p style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+    <a href="/page 2/index.html" style="
+        display: inline-block;
+        font-size: 32px;
+        text-decoration: none;
+        background-image: linear-gradient(90deg, #f02a14, #ff8400, #ffd500, #3cb54a, #0061b2, #f02a14);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 500% 100%;
+        animation: rainbow 4s linear infinite;
+        cursor: pointer;
+    ">• • • • • • • • • •</a>
+</p>
+
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+    
+    <div class="development-indicator"></div>
+    <div class="controls">
+        <div class="control-button" title="Previous Frame"></div>
+        <div class="control-button" title="Next Frame"></div>
+    </div>
+
+    <script>
+
+function createCustomCursor() {
+    const cursor = document.createElement('div');
+    cursor.className = 'custom-cursor';
+    document.body.appendChild(cursor);
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .custom-cursor {
+            width: 70px;
+            height: 70px;
+            background-image: url('https://64.media.tumblr.com/e01361a7486d6ad53ab23a45663e81a4/574ad66142ccfb9a-31/s540x810/4b34547313b7bee1a7a7a515e10ac7861fb38853.gifv');
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+            display: none;
+        }
+
+        body * {
+            cursor: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    function updateCursorPosition(e) {
+        cursor.style.display = 'block';
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    }
+
+    function addHoverEffects() {
+        const interactiveElements = document.querySelectorAll('button, .control-button, .article-preview, .viewfinder-toggle, .mode-switch, .reset-button, .reading-develop-button');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+    }
+
+    document.addEventListener('mousemove', updateCursorPosition);
+    document.addEventListener('mouseleave', () => {
+        cursor.style.display = 'none';
+    });
+
+    addHoverEffects();
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                addHoverEffects();
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    createCustomCursor();
+});
+
+class PolaroidCamera {
+    constructor() {
+
+
+        this.initializeElements();
+        this.bindEvents(); 
+        this.sidebarVisible = false;
+        this.currentFrame = null;
+        this.hasViewedIntro = false;
+        this.isDeveloping = false;
+        this.hasInitialized = false;
+        this.isAnimating = false;
+
+        this.systemState = 'collapsed';
+        this.initializeSystemInterface();
+
+    }
+
+
+
+    setupScrollAnimation = function() {
+    const readingNav = document.querySelector('.reading-mode-nav');
+    if (!readingNav) return;
+
+
+    const titleMap = new Map([
+        ['Defining Photographic Violation', 0],
+        ['Ethics and Power Relations', 1],
+        ['Evolution of Documentary Practice', 2],
+        ['Photography as Social Substance', 3],
+        ['Photography in the Digital Age', 4],
+        ['Representation and Violence', 5]
+    ]);
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '-20% 0px',
+        threshold: [0, 0.2, 0.5, 0.8]
+    };
+
+    let currentActivePreview = null;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                const frame = entry.target;
+                const frameTitle = frame.querySelector('h1')?.textContent;
+                const frameIndex = titleMap.get(frameTitle);
+                
+                if (frameIndex !== undefined) {
+                    const previews = readingNav.querySelectorAll('.article-preview');
+                    previews.forEach((preview, idx) => {
+                        if (idx === frameIndex) {
+                            preview.classList.add('active');
+                        } else {
+                            preview.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        });
+    }, observerOptions);
+
+    this.frames.forEach(frame => observer.observe(frame));
+
+    let scrollTimeout;
+    document.addEventListener('scroll', () => {
+        if (scrollTimeout) {
+            window.cancelAnimationFrame(scrollTimeout);
+        }
+
+        scrollTimeout = window.requestAnimationFrame(() => {
+            const viewportMiddle = window.scrollY + (window.innerHeight / 2);
+            
+            let closestFrame = null;
+            let closestDistance = Infinity;
+
+            this.frames.forEach(frame => {
+                const rect = frame.getBoundingClientRect();
+                const frameMiddle = window.scrollY + rect.top + (rect.height / 2);
+                const distance = Math.abs(viewportMiddle - frameMiddle);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestFrame = frame;
+                }
+            });
+
+            if (closestFrame) {
+                const frameTitle = closestFrame.querySelector('h1')?.textContent;
+                const frameIndex = titleMap.get(frameTitle);
+                
+                if (frameIndex !== undefined) {
+                    const previews = readingNav.querySelectorAll('.article-preview');
+                    previews.forEach((preview, idx) => {
+                        if (idx === frameIndex) {
+                            preview.classList.add('active');
+                        } else {
+                            preview.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    readingNav.querySelectorAll('.article-preview').forEach((preview, index) => {
+        preview.addEventListener('click', () => {
+            const frame = this.frames[index];
+            if (frame) {
+                frame.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                readingNav.querySelectorAll('.article-preview').forEach(p => p.classList.remove('active'));
+                preview.classList.add('active');
+            }
+        });
+    });
+};
+
+initializeElements() {
+    this.previews = document.querySelectorAll('.article-preview');
+    this.frames = document.querySelectorAll('.content-frame');
+    this.mainContent = document.querySelector('.main-content');
+    this.controls = document.querySelectorAll('.control-button');
+    this.sidebar = document.querySelector('.sidebar');
+    this.controlInterface = document.querySelector('.sx70-interface-elements');
+    this.contentContainer = document.querySelector('.content-container');
+    
+    this.contentContainer.style.visibility = 'hidden';
+    this.contentContainer.style.filter = 'blur(10px)';
+    this.sidebar.style.opacity = '0';
+    this.sidebar.style.transform = 'translateX(-20px)';
+    
+    this.frames.forEach(frame => {
+        frame.style.visibility = 'hidden';
+        frame.style.opacity = '0';
+    });
+
+    this.previews.forEach(preview => {
+        preview.style.pointerEvents = 'auto';
+        preview.style.cursor = 'pointer';
+    });
+
+    // 设置取景器背景的初始状态
+    const blurredBg = document.querySelector('.viewfinder-background.blurred');
+    const focusedBg = document.querySelector('.viewfinder-background.focused');
+    
+    if (blurredBg && focusedBg) {
+        blurredBg.style.opacity = '1';
+        focusedBg.style.opacity = '0';
+        blurredBg.style.transition = 'opacity 0.8s ease';
+        focusedBg.style.transition = 'opacity 0.8s ease';
+    }
+
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > 100) {
+            this.controlInterface.classList.add('scroll-active');
+        } else {
+            this.controlInterface.classList.remove('scroll-active');
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+}
+
+
+bindEvents() {
+
+    const viewfinderToggle = document.querySelector('.viewfinder-toggle');
+    const blurredBg = document.querySelector('.viewfinder-background.blurred');
+    const focusedBg = document.querySelector('.viewfinder-background.focused');
+
+    if (viewfinderToggle) {
+        viewfinderToggle.addEventListener('click', () => {
+            if (!this.hasViewedIntro) {
+                this.startIntroAnimation();
+                updateTimecode();
+            }
+        });
+
+
+        viewfinderToggle.addEventListener('mouseenter', () => {
+            if (blurredBg && focusedBg) {
+                blurredBg.style.opacity = '0';
+                focusedBg.style.opacity = '1';
+            }
+        });
+
+        viewfinderToggle.addEventListener('mouseleave', () => {
+            if (blurredBg && focusedBg) {
+                blurredBg.style.opacity = '1';
+                focusedBg.style.opacity = '0';
+            }
+        });
+    }
+
+    this.previews.forEach((preview, index) => {
+        preview.addEventListener('click', () => {
+            if (this.hasViewedIntro && !this.isDeveloping) {
+                this.navigateToFrame(index);
+            }
+        });
+    });
+    this.setupNavigation();
+}
+
+setupNavigation() {
+
+    this.controls[0].addEventListener('click', () => {
+        if (this.hasViewedIntro && this.currentFrame > 0 && !this.isDeveloping) {
+            this.navigateToFrame(this.currentFrame - 1);
+        }
+    });
+
+    this.controls[1].addEventListener('click', () => {
+        if (this.hasViewedIntro && this.currentFrame < this.frames.length - 1 && !this.isDeveloping) {
+            this.navigateToFrame(this.currentFrame + 1);
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (!this.hasViewedIntro || !this.sidebarVisible || this.isDeveloping) return;
+
+        if (e.key === 'ArrowLeft' && this.currentFrame > 0) {
+            this.navigateToFrame(this.currentFrame - 1);
+        }
+        if (e.key === 'ArrowRight' && this.currentFrame < this.frames.length - 1) {
+            this.navigateToFrame(this.currentFrame + 1);
+        }
+    });
+}
+
+
+
+
+    updateFrameCounter(index) {
+    if (!this.frameCounter) {
+        this.frameCounter = document.querySelector('.frame-counter');
+    }
+
+    if (this.frameCounter) {
+        //
+        const newNumber = this.frameCount.toString().padStart(5, '0');
+        const digits = this.frameCounter.querySelectorAll('.digit');
+        
+        digits.forEach((digit, i) => {
+            //
+            const currentNumber = digit.textContent;
+            const newDigit = newNumber[i];
+            
+            if (currentNumber !== newDigit) {
+                //
+                const oldNumberElement = document.createElement('div');
+                oldNumberElement.className = 'number-old';
+                oldNumberElement.textContent = currentNumber;
+                
+                const newNumberElement = document.createElement('div');
+                newNumberElement.className = 'number-new';
+                newNumberElement.textContent = newDigit;
+                newNumberElement.style.transform = 'translateY(100%)';
+                
+                //
+                digit.textContent = '';
+                digit.appendChild(oldNumberElement);
+                digit.appendChild(newNumberElement);
+                
+                //
+                requestAnimationFrame(() => {
+                    digit.classList.add('animating');
+                    newNumberElement.style.transform = 'translateY(0)';
+                });
+                
+                //
+                setTimeout(() => {
+                    digit.classList.remove('animating');
+                    digit.textContent = newDigit;
+                }, 300);
+            }
+        });
+    }
+}
+
+startIntroAnimation() {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+
+    const viewfinder = document.querySelector('.viewfinder-container');
+    const toggle = document.querySelector('.viewfinder-toggle');
+    const blocker = document.querySelector('.interaction-blocker');
+    const interfaceElement = document.querySelector('.sx70-interface-elements');
+
+    if (interfaceElement) {
+        interfaceElement.style.removeProperty('visibility');
+        interfaceElement.style.removeProperty('opacity');
+    }
+
+    viewfinder.classList.add('viewfinder-hidden');
+    toggle.classList.add('viewfinder-hidden');
+    if (blocker) blocker.remove();
+
+    this.contentContainer.style.visibility = 'visible';
+    this.contentContainer.style.filter = 'none';
+    this.contentContainer.classList.add('viewed');
+
+    setTimeout(() => {
+        this.isAnimating = false;
+        this.hasViewedIntro = true;
+    }, 800);
+}
+
+
+
+initializeSystemInterface() {
+    const interfaceElement = document.querySelector('.sx70-interface-elements');
+    
+    interfaceElement.style.visibility = 'hidden';
+    interfaceElement.style.opacity = '0';
+    interfaceElement.classList.add('collapsed');
+    
+    this.hideSystemContent();
+    
+    interfaceElement.addEventListener('click', () => {
+        this.handleSystemClick();
+    });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.target.classList.contains('viewed')) {
+
+                setTimeout(() => {
+                    interfaceElement.style.visibility = 'visible';
+                    interfaceElement.style.opacity = '1';
+                }, 300);
+                observer.disconnect();
+            }
+        });
+    });
+
+    observer.observe(this.contentContainer, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+}
+
+    handleSystemClick() {
+    const interfaceElement = this.controlInterface;
+    const sidebar = this.sidebar;
+    const contentContainer = this.contentContainer;
+
+    switch (this.systemState) {
+        case 'collapsed':
+            interfaceElement.classList.remove('collapsed');
+            interfaceElement.classList.add('expanded');
+            this.showFullSystemContent();
+            this.systemState = 'expanded';
+            break;
+
+        case 'expanded':
+            //
+            contentContainer.classList.add('slide-up');
+            this.showSidebar();
+            this.sidebarVisible = true;
+            this.systemState = 'nav-shown';
+            break;
+
+        case 'nav-shown':
+            //
+            sidebar.style.opacity = '0';
+            sidebar.style.transform = 'translateX(-20px)';
+            this.sidebarVisible = false;
+            this.systemState = 'expanded-again';
+            break;
+
+            case 'expanded-again':
+    //
+    const elements = [
+        interfaceElement.querySelector('.mechanical-lines'),
+        interfaceElement.querySelector('.gear-system'),
+        interfaceElement.querySelector('.optical-system')
+    ];
+    
+    elements.forEach(element => {
+        if (element) {
+            element.style.transition = 'none';
+            element.style.display = 'none';
+        }
+    });
+
+    //
+    this.frames.forEach(frame => {
+        frame.classList.remove('visible');
+        frame.classList.remove('developing-frame');
+        frame.style.visibility = 'hidden';
+        frame.style.opacity = '0';
+    });
+
+    this.currentFrame = null;
+
+    this.sidebar.style.opacity = '0';
+    this.sidebar.style.transform = 'translateX(-20px)';
+    this.sidebarVisible = false;
+
+    requestAnimationFrame(() => {
+        interfaceElement.classList.remove('expanded');
+        interfaceElement.classList.add('collapsed');
+        contentContainer.classList.remove('slide-up');
+    });
+    
+    this.systemState = 'collapsed';
+    break;
+    }
+}
+
+    showSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.opacity = '1';
+    sidebar.style.transform = 'translateX(0)';
+}
+
+    showFullSystemContent() {
+    const interfaceElement = document.querySelector('.sx70-interface-elements');
+    
+    setTimeout(() => {
+        const mechanicalLines = interfaceElement.querySelector('.mechanical-lines');
+        const gearSystem = interfaceElement.querySelector('.gear-system');
+        const opticalSystem = interfaceElement.querySelector('.optical-system');
+        
+        if (mechanicalLines) mechanicalLines.style.display = 'block';
+        if (gearSystem) gearSystem.style.display = 'block';
+        if (opticalSystem) opticalSystem.style.display = 'block';
+    }, 300);
+}
+
+    hideSystemContent() {
+        const interfaceElement = document.querySelector('.sx70-interface-elements');
+        interfaceElement.querySelector('.mechanical-lines').style.display = 'none';
+        interfaceElement.querySelector('.gear-system').style.display = 'none';
+        interfaceElement.querySelector('.optical-system').style.display = 'none';
+    }
+
+    updateActivePreview(index) {
+        this.previews.forEach(preview => preview.classList.remove('active'));
+        if (index >= 0) {
+            this.previews[index].classList.add('active');
+            this.currentFrame = index;
+        }
+    }
+
+    async developImage(index) {
+        this.isDeveloping = true;
+    
+    //
+    this.frames.forEach(frame => {
+        //
+        frame.classList.remove('visible');
+        frame.classList.remove('developing-frame');
+        frame.classList.remove('developing');
+        
+        //
+        frame.style.visibility = 'hidden';
+        frame.style.opacity = '0';
+        frame.style.display = 'none';
+        frame.style.transform = 'none';
+        frame.style.filter = 'none';
+        frame.style.margin = '0';
+        
+
+        const effects = frame.querySelectorAll('.grain-overlay, .chemical-wave, .light-leak, .development-strip');
+        effects.forEach(effect => effect.remove());
+    });
+
+    const frame = this.frames[index];
+    frame.style.display = 'block';
+    frame.style.visibility = 'visible';
+    frame.style.opacity = '0';
+    
+
+    this.mainContent.scrollTo({
+        left: frame.offsetLeft,
+        behavior: 'smooth'
+    });
+    
+
+    frame.classList.add('developing');
+
+    frame.style.display = 'block';
+    frame.style.filter = 'blur(8px) brightness(0.6) contrast(0.9) grayscale(0.8)';
+    frame.style.opacity = '0.4';
+    frame.style.transform = 'scale(1.02)';
+    frame.style.visibility = 'visible';
+    frame.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+
+
+    const grainOverlay = document.createElement('div');
+    grainOverlay.className = 'grain-overlay';
+    grainOverlay.style.opacity = '0.06';
+
+    const chemicalWave = document.createElement('div');
+    chemicalWave.className = 'chemical-wave';
+    chemicalWave.style.opacity = '0.3';
+
+    const lightLeak = document.createElement('div');
+    lightLeak.className = 'light-leak';
+    lightLeak.style.opacity = '0.15';
+
+    const developmentStrip = document.createElement('div');
+    developmentStrip.className = 'development-strip';
+    
+    frame.appendChild(grainOverlay);
+    frame.appendChild(chemicalWave);
+    frame.appendChild(lightLeak);
+    frame.appendChild(developmentStrip);
+
+    await new Promise(requestAnimationFrame);
+    
+    frame.classList.add('developing-frame');
+    frame.classList.add('visible');
+
+    const duration = 1200;
+    const steps = 15;
+    const stepDuration = duration / steps;
+    
+    const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    for(let i = 0; i < steps; i++) {
+        await new Promise(resolve => setTimeout(resolve, stepDuration));
+        const rawProgress = (i + 1) / steps;
+        const progress = easeInOutCubic(rawProgress);
+        
+        frame.style.filter = `
+            blur(${8 * (1 - progress)}px) 
+            brightness(${0.6 + progress * 0.4}) 
+            contrast(${0.9 + progress * 0.1}) 
+            grayscale(${0.8 * (1 - progress)})
+            saturate(${0.95 + progress * 0.05})
+        `;
+        frame.style.opacity = 0.4 + progress * 0.6;
+        frame.style.transform = `
+            scale(${1.02 - progress * 0.02}) 
+            translateY(${(1 - progress) * 1}px)
+        `;
+    }
+
+    const cleanup = [grainOverlay, chemicalWave, lightLeak, developmentStrip];
+    cleanup.forEach(el => {
+        el.style.transition = 'opacity 0.3s ease';
+        el.style.opacity = '0';
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 300));
+    cleanup.forEach(el => el.remove());
+    
+    frame.classList.remove('developing-frame');
+    frame.classList.remove('developing');
+    frame.style.filter = 'none';
+    frame.style.opacity = '1';
+    frame.style.transform = 'scale(1)';
+
+    this.isDeveloping = false;
+}
+
+navigateToFrame(index) {
+    if (this.isDeveloping || index < 0 || index >= this.frames.length) return;
+    
+    this.isDeveloping = true;
+    this.updateActivePreview(index);
+    
+    const currentPosition = this.contentContainer.classList.contains('slide-up');
+    
+    this.frames.forEach(frame => {
+        frame.classList.remove('visible');
+        frame.classList.remove('developing-frame');
+        frame.style.visibility = 'hidden';
+        frame.style.opacity = '0';
+    });
+
+
+    this.developImage(index).then(() => {
+        this.isDeveloping = false;
+        
+        if (currentPosition) {
+            this.contentContainer.classList.add('slide-up');
+        }
+
+        const frame = this.frames[index];
+        frame.scrollIntoView({ 
+            behavior: 'smooth', 
+            inline: 'start',
+            block: 'nearest'
+        });
+
+        this.updateProgress(index);
+    });
+}
+
+    updateProgress(index) {
+        const progress = ((index + 1) / this.frames.length) * 100;
+        const indicator = document.querySelector('.development-indicator');
+        if (indicator) {
+            indicator.style.height = `${progress}%`;
+        }
+    }
+}
+
+const styleElement = document.createElement('style');
+styleElement.textContent = `
+
+.mode-switch, .reset-button {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    padding: 3px 6px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #000;
+    background: white;
+    border: 1px solid #000;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-switch {
+    top: 20px;
+}
+
+.reset-button {
+    top: 60px;
+}
+
+.mode-switch.visible, .reset-button.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.mode-switch:hover, .reset-button:hover {
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    transform: translate(calc(-50% - 1px), -1px);
+}
+
+.mode-switch:active, .reset-button:active {
+    transform: translateX(-50%, 0);
+    box-shadow: 0 0 0 0 rgba(0,0,0,1);
+}
+
+body.reading-mode .content-frame {
+    visibility: visible !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+body.reading-mode .development-indicator {
+    opacity: 0;
+}
+`;
+document.head.appendChild(styleElement);
+
+const originalInit = PolaroidCamera.prototype.initializeElements;
+const originalNavigate = PolaroidCamera.prototype.navigateToFrame;
+
+PolaroidCamera.prototype.initializeElements = function() {
+    originalInit.call(this);
+    this.isReadingMode = false;
+    this.addModeSwitch();
+};
+
+PolaroidCamera.prototype.startIntroAnimation = function() {
+    if (this.isAnimating) return;
+    this.isAnimating = true;
+
+    const viewfinder = document.querySelector('.viewfinder-container');
+    const toggle = document.querySelector('.viewfinder-toggle');
+    const blocker = document.querySelector('.interaction-blocker');
+
+    viewfinder.classList.add('viewfinder-hidden');
+    toggle.classList.add('viewfinder-hidden');
+    if (blocker) blocker.remove();
+
+    this.contentContainer.style.visibility = 'visible';
+    this.contentContainer.style.filter = 'none';
+    this.contentContainer.classList.add('viewed');
+
+    setTimeout(() => {
+        this.modeSwitch.classList.add('visible');
+        this.resetButton.classList.add('visible');
+        this.isAnimating = false;
+        this.hasViewedIntro = true;
+    }, 800);
+};
+
+
+PolaroidCamera.prototype.retakePhoto = function() {
+    const defocusOverlay = document.createElement('div');
+    defocusOverlay.className = 'defocus-overlay';
+    document.body.appendChild(defocusOverlay);
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .defocus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .defocus-overlay.active {
+            opacity: 1;
+            animation: focusSequence 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes focusSequence {
+            0% {
+                backdrop-filter: blur(0px);
+            }
+            25% {
+                backdrop-filter: blur(25px);
+            }
+            50% {
+                backdrop-filter: blur(15px);
+            }
+            75% {
+                backdrop-filter: blur(35px);
+            }
+            100% {
+                backdrop-filter: blur(25px);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const executeDefocus = async () => {
+        defocusOverlay.classList.add('active');
+        
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        window.location.reload();
+    };
+
+    executeDefocus();
+};
+
+
+PolaroidCamera.prototype.addModeSwitch = function() {
+    const modeSwitch = document.createElement('button');
+    modeSwitch.className = 'mode-switch';
+    modeSwitch.textContent = 'READING MODE';
+
+    const resetButton = document.createElement('button');
+    resetButton.className = 'reset-button';
+    resetButton.textContent = 'RETAKE';
+    
+    document.body.appendChild(modeSwitch);
+    document.body.appendChild(resetButton);
+
+    modeSwitch.addEventListener('click', () => {
+        this.toggleMode(modeSwitch);
+    });
+
+    resetButton.addEventListener('click', () => {
+        this.retakePhoto();
+    });
+
+    this.modeSwitch = modeSwitch;
+    this.resetButton = resetButton;
+};
+
+
+class FilmCartridgeSystem {
+    constructor() {
+        this.state = 'closed';
+        this.filmCount = 0;
+        this.maxFilms = 8;
+        this.initializeElements();
+        this.createSoundEffects();
+    }
+
+    initializeElements() {
+        const container = document.createElement('div');
+        container.className = 'film-cartridge-container';
+        
+        container.innerHTML = `
+            <div class="cartridge-door">
+                <div class="door-hinge"></div>
+                <div class="door-surface"></div>
+                <div class="door-inner">
+                    <div class="film-counter">${this.filmCount}/${this.maxFilms}</div>
+                </div>
+            </div>
+            <div class="cartridge-slot">
+                <div class="slot-guide-left"></div>
+                <div class="slot-guide-right"></div>
+                <div class="film-pack">
+                    <div class="film-dark-slide"></div>
+                    <div class="films"></div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(container);
+
+        const style = document.createElement('style');
+        style.textContent = `
+            .film-cartridge-container {
+                position: fixed;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 120px;
+                height: 15px;
+                perspective: 1000px;
+            }
+
+            .cartridge-door {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: #2a2a2a;
+                transform-origin: bottom;
+                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                border-radius: 2px 2px 0 0;
+            }
+
+            .door-hinge {
+                position: absolute;
+                bottom: 0;
+                left: 5px;
+                right: 5px;
+                height: 2px;
+                background: #1a1a1a;
+            }
+
+            .door-surface {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, 
+                    rgba(255,255,255,0.1),
+                    transparent 40%
+                );
+            }
+
+            .door-inner {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #1a1a1a;
+                transform: rotateX(180deg);
+                backface-visibility: hidden;
+            }
+
+            .film-counter {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: #666;
+                font-family: monospace;
+                font-size: 10px;
+            }
+
+            .cartridge-slot {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #1a1a1a;
+                overflow: hidden;
+            }
+
+            .slot-guide-left,
+            .slot-guide-right {
+                position: absolute;
+                top: 0;
+                width: 2px;
+                height: 100%;
+                background: #333;
+            }
+
+            .slot-guide-left { left: 10px; }
+            .slot-guide-right { right: 10px; }
+
+            .film-pack {
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                height: 90%;
+                background: #111;
+                transition: top 0.4s ease;
+            }
+
+            .film-dark-slide {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: #222;
+                transform-origin: right;
+                transition: transform 0.3s ease;
+            }
+
+            /* 状态类 */
+            .cartridge-door.opening {
+                transform: rotateX(-120deg);
+            }
+
+            .film-pack.loading {
+                top: 5%;
+                animation: packShake 0.3s ease;
+            }
+
+            @keyframes packShake {
+                0%, 100% { transform: translateX(-50%); }
+                25% { transform: translateX(-52%); }
+                75% { transform: translateX(-48%); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+
+    async openDoor() {
+        if (this.state !== 'closed') return;
+        
+        this.state = 'opening';
+        const door = document.querySelector('.cartridge-door');
+        
+        this.sounds.open.play().catch(() => {});
+        
+        door.classList.add('opening');
+        
+        await new Promise(resolve => setTimeout(resolve, 600));
+        this.state = 'open';
+    }
+
+
+    async ejectFilm() {
+        if (this.filmCount <= 0) return;
+        
+        this.filmCount--;
+        const counter = document.querySelector('.film-counter');
+        counter.textContent = `${this.filmCount}/${this.maxFilms}`;
+        
+        // 添加胶片弹出的动画效果
+        const ejectedFilm = document.createElement('div');
+        ejectedFilm.className = 'ejected-film';
+        document.body.appendChild(ejectedFilm);
+        
+        setTimeout(() => ejectedFilm.remove(), 1000);
+    }
+}
+
+PolaroidCamera.prototype.addReadingDevelopButton = function() {
+    const developButton = document.createElement('button');
+    developButton.className = 'reading-develop-button';
+    developButton.textContent = 'CLICK TO DEVELOP';
+    document.body.appendChild(developButton);
+
+    this.frames.forEach(frame => {
+        frame.style.visibility = 'hidden';
+        frame.style.opacity = '0';
+        frame.style.filter = 'blur(8px) brightness(0.6) contrast(0.9) grayscale(0.8)';
+        frame.style.transform = 'scale(1.02)';
+        
+        const content = frame.querySelector('.content');
+        if (content) {
+            content.style.opacity = '0';
+            content.style.filter = 'blur(8px) brightness(0.6)';
+        }
+    });
+
+    const readingNav = document.querySelector('.reading-mode-nav');
+    if (readingNav) {
+        const previews = readingNav.querySelectorAll('.article-preview');
+        previews.forEach(preview => {
+            preview.style.visibility = 'hidden';
+            preview.style.opacity = '0';
+            preview.style.filter = 'blur(8px) brightness(0.6)';
+            preview.style.transform = 'scale(1.02)';
+        });
+    }
+
+    developButton.addEventListener('click', () => {
+        developButton.style.opacity = '0';
+        setTimeout(() => developButton.remove(), 300);
+
+        if (readingNav) {
+            const previews = readingNav.querySelectorAll('.article-preview');
+            previews.forEach((preview, index) => {
+                setTimeout(() => {
+                    preview.style.visibility = 'visible';
+                    preview.style.opacity = '1';
+                    preview.style.filter = 'none';
+                    preview.style.transform = 'scale(1)';
+                    preview.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                }, index * 200);
+            });
+        }
+
+        this.frames.forEach((frame, index) => {
+            setTimeout(() => {
+                frame.style.visibility = 'visible';
+                frame.style.display = 'block';
+                this.developReadingFrame(frame, index);
+            }, index * 400);
+        });
+    });
+};
+
+PolaroidCamera.prototype.developReadingFrame = function(frame, index) {
+    frame.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+    
+
+    const lightLeak = document.createElement('div');
+    lightLeak.className = 'light-leak reading-light-leak';
+    frame.appendChild(lightLeak);
+
+    requestAnimationFrame(() => {
+
+        frame.style.opacity = '1';
+        frame.style.filter = 'none';
+        frame.style.transform = 'scale(1)';
+
+        const content = frame.querySelector('.content');
+        if (content) {
+            content.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+            content.style.opacity = '1';
+            content.style.filter = 'none';
+        }
+
+        const title = frame.querySelector('h1');
+        if (title) {
+            title.style.transition = 'all 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+            title.style.opacity = '1';
+            title.style.filter = 'none';
+        }
+
+        setTimeout(() => {
+            lightLeak.remove();
+        }, 1200);
+    });
+};
+
+
+PolaroidCamera.prototype.toggleMode = function(button) {
+    this.isReadingMode = !this.isReadingMode;
+    document.body.classList.toggle('reading-mode', this.isReadingMode);
+    button.textContent = this.isReadingMode ? 'POLAROID MODE' : 'READING MODE';
+
+    if (this.isReadingMode) {
+
+        this.mainContent.scrollLeft = 0;
+        this.sidebar.style.opacity = '0';
+        
+        if (!document.querySelector('.reading-mode-nav')) {
+            const readingNav = document.createElement('div');
+            readingNav.className = 'reading-mode-nav';
+            readingNav.innerHTML = this.sidebar.innerHTML;
+            document.body.appendChild(readingNav);
+            
+            const previews = readingNav.querySelectorAll('.article-preview');
+            previews.forEach(preview => {
+
+                preview.style.opacity = '0';
+                preview.style.visibility = 'hidden';
+                preview.style.transform = 'translateX(-20px)';
+                preview.style.filter = 'blur(8px) brightness(0.6)';
+            });
+
+            previews.forEach((preview, index) => {
+                preview.addEventListener('click', () => {
+                    previews.forEach(p => p.classList.remove('active'));
+                    preview.classList.add('active');
+                    
+                    const targetFrame = this.frames[index];
+                    if (targetFrame) {
+                        targetFrame.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            this.setupScrollAnimation();
+        }
+
+        this.frames.forEach(frame => {
+            frame.style.visibility = 'hidden';
+            frame.style.opacity = '0';
+            frame.style.display = 'none';
+            frame.style.position = 'relative';
+            frame.style.left = 'auto';
+            frame.classList.remove('visible');
+            frame.style.filter = 'blur(8px) brightness(0.6) contrast(0.9) grayscale(0.8)';
+            frame.style.transform = 'scale(1.02)';
+
+            const content = frame.querySelector('.content');
+            if (content) {
+                content.style.opacity = '0';
+                content.style.filter = 'blur(8px) brightness(0.6)';
+                
+                content.querySelectorAll('h2, p').forEach(element => {
+                    element.style.opacity = '0';
+                    element.style.filter = 'blur(8px) brightness(0.6)';
+                });
+            }
+        });
+
+        const developButton = document.createElement('button');
+        developButton.className = 'reading-develop-button';
+        developButton.textContent = 'CLICK TO DEVELOP';
+        document.body.appendChild(developButton);
+
+        developButton.addEventListener('click', () => {
+            developButton.style.opacity = '0';
+            setTimeout(() => developButton.remove(), 300);
+
+            const readingNav = document.querySelector('.reading-mode-nav');
+            if (readingNav) {
+                readingNav.classList.add('visible');
+                const previews = readingNav.querySelectorAll('.article-preview');
+                
+                previews.forEach((preview, index) => {
+                    setTimeout(() => {
+                        preview.style.visibility = 'visible';
+                        preview.style.opacity = '1';
+                        preview.style.transform = 'translateX(0)';
+                        preview.style.filter = 'none';
+                    }, index * 200);
+                });
+
+                if (previews.length > 0) {
+                    previews[0].classList.add('active');
+                }
+            }
+
+            this.frames.forEach((frame, index) => {
+                setTimeout(() => {
+                    frame.style.visibility = 'visible';
+                    frame.style.display = 'block';
+                    
+                    const lightLeak = document.createElement('div');
+                    lightLeak.className = 'light-leak reading-light-leak';
+                    frame.appendChild(lightLeak);
+
+                    requestAnimationFrame(() => {
+                        frame.style.opacity = '1';
+                        frame.style.filter = 'none';
+                        frame.style.transform = 'scale(1)';
+
+                        const content = frame.querySelector('.content');
+                        if (content) {
+                            content.style.opacity = '1';
+                            content.style.filter = 'none';
+                            
+                            content.querySelectorAll('h2, p').forEach(element => {
+                                element.style.opacity = '1';
+                                element.style.filter = 'none';
+                            });
+                        }
+
+                        setTimeout(() => {
+                            lightLeak.remove();
+                        }, 1200);
+                    });
+                }, index * 400);
+            });
+        });
+
+    } else {
+        // 退出阅读模式
+        const readingNav = document.querySelector('.reading-mode-nav');
+        if (readingNav) {
+            readingNav.classList.remove('visible');
+            setTimeout(() => readingNav.remove(), 300);
+        }
+
+        // 重置容器状态
+        this.contentContainer.style.visibility = 'visible';
+        this.contentContainer.style.filter = 'none';
+        this.contentContainer.classList.add('viewed');
+        this.contentContainer.classList.remove('slide-up');
+
+        // 重置所有帧状态
+        this.frames.forEach(frame => {
+            frame.style.visibility = 'hidden';
+            frame.style.opacity = '0';
+            frame.style.display = 'none';
+            frame.classList.remove('visible');
+            frame.classList.remove('developing');
+            frame.classList.remove('developing-frame');
+            frame.style.filter = 'none';
+            frame.style.transform = 'none';
+            
+            const content = frame.querySelector('.content');
+            if (content) {
+                content.classList.remove('visible');
+            }
+
+            const effects = frame.querySelectorAll('.grain-overlay, .chemical-wave, .light-leak, .development-strip');
+            effects.forEach(effect => effect.remove());
+        });
+
+        this.sidebarVisible = false;
+        this.sidebar.style.opacity = '0';
+        this.sidebar.style.transform = 'translateX(-20px)';
+
+        this.previews.forEach(preview => {
+            preview.classList.remove('active');
+            preview.style.transform = '';
+        });
+
+        const interfaceElement = document.querySelector('.sx70-interface-elements');
+        if (interfaceElement) {
+            interfaceElement.classList.add('collapsed');
+            interfaceElement.classList.remove('expanded');
+            
+            const elements = [
+                interfaceElement.querySelector('.mechanical-lines'),
+                interfaceElement.querySelector('.gear-system'),
+                interfaceElement.querySelector('.optical-system')
+            ];
+            
+            elements.forEach(element => {
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+        }
+
+        const indicator = document.querySelector('.development-indicator');
+        if (indicator) {
+            indicator.style.height = '0%';
+        }
+
+        this.currentFrame = null;
+        this.isDeveloping = false;
+        this.systemState = 'collapsed';
+        this.hasInitialized = false;
+
+        const developButton = document.querySelector('.reading-develop-button');
+        if (developButton) {
+            developButton.remove();
+        }
+    }
+};
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const camera = new PolaroidCamera();
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+    });
+
+    const title = document.querySelector('.camera-model');
+    if (title) {
+        const text = title.textContent;
+        title.textContent = '';
+        text.split('').forEach(letter => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            title.appendChild(span);
+        });
+    }
+
+    const viewfinder = document.querySelector('.viewfinder-container');
+    const toggle = document.querySelector('.viewfinder-toggle');
+    if (viewfinder && toggle) {
+        const blocker = document.createElement('div');
+        blocker.className = 'interaction-blocker';
+        document.body.appendChild(blocker);
+    }
+});
+
+
+        </script>
+
+    
+
+</body>
+</html>
