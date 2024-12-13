@@ -12,8 +12,6 @@
     <style>
 
 
-
-
 @font-face {
     font-family: 'Junicode';
     src: url('junicode-boldcondensed.woff2') format('woff2'),
@@ -260,34 +258,6 @@ body.reading-mode .content-container.viewed::before {
     
 }
 
-
-        .controls {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .control-button {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #000;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .control-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 10px;
-            height: 10px;
-            border: 1px solid #000;
-            border-radius: 50%;
-        }
 
         .development-indicator {
             position: fixed;
@@ -949,6 +919,7 @@ body.reading-mode .content-container.viewed::before {
 }
 
 .viewfinder-background.focused .viewfinder-image {
+
     background-size: cover;
     background-position: center;
     width: 100%;
@@ -1475,15 +1446,6 @@ body.reading-mode .sidebar {
 }
 
 
-* {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-}
-
-*::-webkit-scrollbar {
-    display: none !important;
-}
-
 
 .main-content,
 .content-frame {
@@ -1728,9 +1690,136 @@ body.reading-mode .sidebar {
 }
 
 
+.story-link {
+    position: relative;
+    display: inline-block;
+    padding: 8px 30px;
+    font-size: 18px;
+    font-family: 'HelveticaNeueCyr', Helvetica, Arial, sans-serif;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.8);
+    border: 2px solid #000;
+    border-radius: 50px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.story-link .link-text {
+    display: block;
+    transition: opacity 0.35s ease;
+}
+
+.story-link:hover .link-text {
+    opacity: 0;
+}
+
+.story-link:hover::after {
+    content: '• • • • • • • • • •';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    text-align: center;
+    background-image: linear-gradient(
+        90deg,
+        #f02a14 0%,
+        #ff8400 20%,
+        #ffd500 40%,
+        #3cb54a 60%,
+        #0061b2 80%,
+        #f02a14 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 500% 100%;
+    animation: rainbow 4s linear infinite;
+}
+
+/* 在现有的style标签内添加 */
+.about-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1000;
+}
+
+
+.about-toggle {
+    padding: 8px 30px;
+    font-size: 18px;
+    font-family: 'HelveticaNeueCyr', Helvetica, Arial, sans-serif;
+    color: rgba(0, 0, 0, 0.8);
+    border: 2px solid #000;
+    border-radius: 50px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 8px;
+}
+
+.about-content {
+    width: 320px;
+    height: 0;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.about-content.open {
+    height: 340px;
+    opacity: 1;
+}
+
+.about-inner {
+    position: relative;
+    padding: 24px;
+}
+
+.about-inner h3 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    font-weight: 500;
+    font-family: 'HelveticaNeueCyr', Helvetica, Arial, sans-serif;
+}
+
+.about-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.7);
+    font-family: 'HelveticaNeueCyr', Helvetica, Arial, sans-serif;
+}
+
+.about-text p {
+    margin-bottom: 16px;
+}
+
     </style>
 </head>
 <body>
+
+
+<div class="about-panel hidden">
+    <button class="about-toggle">About</button>
+    <div class="about-content">
+        <div class="about-inner">
+            <h3>LUMIMORIA pt.2</h3>
+            <div class="about-text">
+                <p>An interactive exploration of John Roberts' seminal work on photographic theory and ethics.</p>
+                <p>This digital adaptation features six key discussions on violation, power relations, documentary practices, and the evolution of photography in the digital age.</p>
+                <p>Navigate through content using both the traditional reading mode and our unique polaroid-inspired interface.</p>
+            </div>
+        
+            </div>
+        </div>
+    </div>
+</div>
 
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height">
@@ -1981,20 +2070,11 @@ body.reading-mode .sidebar {
                 <p>Yet if we readily accept the strictures against violation then we also accept the notion that the effects of violence are unrepresentable, and we thereby concede symbolic ground to the perpetrators of state violence. And this means that those photographers who expose such systemic violence are left with less opportunity to mediate the effects of violence, critically and politically, than before.</p>
                 <p>So representational intolerance is not something photographers want to give up easily, for photography's inhuman violation of the integrity of its subjects is central to its ethical and political charge. Without this photography loses all sense of its interruptive and counter-symbolic function in the world.</p>
 
-<p style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
-    <a href="/story/" style="
-        display: inline-block;
-        font-size: 32px;
-        text-decoration: none;
-        background-image: linear-gradient(90deg, #f02a14, #ff8400, #ffd500, #3cb54a, #0061b2, #f02a14);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-size: 500% 100%;
-        animation: rainbow 4s linear infinite;
-        cursor: pointer;
-    ">• • • • • • • • • •</a>
-</p>
+                <p style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+                    <a href="/story/" class="story-link">
+                        <span class="link-text">Click to find stories</span>
+                    </a>
+                </p>
 
             </div>
 
@@ -2321,55 +2401,6 @@ setupNavigation() {
 }
 
 
-
-
-    updateFrameCounter(index) {
-    if (!this.frameCounter) {
-        this.frameCounter = document.querySelector('.frame-counter');
-    }
-
-    if (this.frameCounter) {
-        //
-        const newNumber = this.frameCount.toString().padStart(5, '0');
-        const digits = this.frameCounter.querySelectorAll('.digit');
-        
-        digits.forEach((digit, i) => {
-            //
-            const currentNumber = digit.textContent;
-            const newDigit = newNumber[i];
-            
-            if (currentNumber !== newDigit) {
-                //
-                const oldNumberElement = document.createElement('div');
-                oldNumberElement.className = 'number-old';
-                oldNumberElement.textContent = currentNumber;
-                
-                const newNumberElement = document.createElement('div');
-                newNumberElement.className = 'number-new';
-                newNumberElement.textContent = newDigit;
-                newNumberElement.style.transform = 'translateY(100%)';
-                
-                //
-                digit.textContent = '';
-                digit.appendChild(oldNumberElement);
-                digit.appendChild(newNumberElement);
-                
-                //
-                requestAnimationFrame(() => {
-                    digit.classList.add('animating');
-                    newNumberElement.style.transform = 'translateY(0)';
-                });
-                
-                //
-                setTimeout(() => {
-                    digit.classList.remove('animating');
-                    digit.textContent = newDigit;
-                }, 300);
-            }
-        });
-    }
-}
-
 startIntroAnimation() {
     if (this.isAnimating) return;
     this.isAnimating = true;
@@ -2432,7 +2463,7 @@ initializeSystemInterface() {
     });
 }
 
-    handleSystemClick() {
+handleSystemClick = function() {
     const interfaceElement = this.controlInterface;
     const sidebar = this.sidebar;
     const contentContainer = this.contentContainer;
@@ -2446,60 +2477,54 @@ initializeSystemInterface() {
             break;
 
         case 'expanded':
-            //
             contentContainer.classList.add('slide-up');
             this.showSidebar();
             this.sidebarVisible = true;
+            this.showControlButtons();
             this.systemState = 'nav-shown';
             break;
 
         case 'nav-shown':
-            //
             sidebar.style.opacity = '0';
             sidebar.style.transform = 'translateX(-20px)';
             this.sidebarVisible = false;
             this.systemState = 'expanded-again';
             break;
 
-            case 'expanded-again':
-    //
-    const elements = [
-        interfaceElement.querySelector('.mechanical-lines'),
-        interfaceElement.querySelector('.gear-system'),
-        interfaceElement.querySelector('.optical-system')
-    ];
+        case 'expanded-again':
+            const elements = [
+                interfaceElement.querySelector('.optical-system')
+            ];
     
-    elements.forEach(element => {
-        if (element) {
-            element.style.transition = 'none';
-            element.style.display = 'none';
-        }
-    });
+            elements.forEach(element => {
+                if (element) {
+                    element.style.transition = 'none';
+                    element.style.display = 'none';
+                }
+            });
 
-    //
-    this.frames.forEach(frame => {
-        frame.classList.remove('visible');
-        frame.classList.remove('developing-frame');
-        frame.style.visibility = 'hidden';
-        frame.style.opacity = '0';
-    });
+            this.frames.forEach(frame => {
+                frame.classList.remove('visible');
+                frame.classList.remove('developing-frame');
+                frame.style.visibility = 'hidden';
+                frame.style.opacity = '0';
+            });
 
-    this.currentFrame = null;
+            this.currentFrame = null;
+            this.sidebar.style.opacity = '0';
+            this.sidebar.style.transform = 'translateX(-20px)';
+            this.sidebarVisible = false;
 
-    this.sidebar.style.opacity = '0';
-    this.sidebar.style.transform = 'translateX(-20px)';
-    this.sidebarVisible = false;
-
-    requestAnimationFrame(() => {
-        interfaceElement.classList.remove('expanded');
-        interfaceElement.classList.add('collapsed');
-        contentContainer.classList.remove('slide-up');
-    });
+            requestAnimationFrame(() => {
+                interfaceElement.classList.remove('expanded');
+                interfaceElement.classList.add('collapsed');
+                contentContainer.classList.remove('slide-up');
+            });
     
-    this.systemState = 'collapsed';
-    break;
+            this.systemState = 'collapsed';
+            break;
     }
-}
+};
 
     showSidebar() {
     const sidebar = document.querySelector('.sidebar');
@@ -2511,8 +2536,6 @@ initializeSystemInterface() {
     const interfaceElement = document.querySelector('.sx70-interface-elements');
     
     setTimeout(() => {
-        const mechanicalLines = interfaceElement.querySelector('.mechanical-lines');
-        const gearSystem = interfaceElement.querySelector('.gear-system');
         const opticalSystem = interfaceElement.querySelector('.optical-system');
         
         if (mechanicalLines) mechanicalLines.style.display = 'block';
@@ -2523,8 +2546,6 @@ initializeSystemInterface() {
 
     hideSystemContent() {
         const interfaceElement = document.querySelector('.sx70-interface-elements');
-        interfaceElement.querySelector('.mechanical-lines').style.display = 'none';
-        interfaceElement.querySelector('.gear-system').style.display = 'none';
         interfaceElement.querySelector('.optical-system').style.display = 'none';
     }
 
@@ -2539,7 +2560,7 @@ initializeSystemInterface() {
     async developImage(index) {
     this.isDeveloping = true;
     
-    // 重置所有帧
+    //
     this.frames.forEach(frame => {
         frame.classList.remove('visible');
         frame.classList.remove('developing-frame');
@@ -2778,11 +2799,16 @@ PolaroidCamera.prototype.startIntroAnimation = function() {
     this.contentContainer.classList.add('viewed');
 
     setTimeout(() => {
-        this.modeSwitch.classList.add('visible');
-        this.resetButton.classList.add('visible');
         this.isAnimating = false;
         this.hasViewedIntro = true;
     }, 800);
+};
+
+PolaroidCamera.prototype.showControlButtons = function() {
+    if (this.modeSwitch && this.resetButton) {
+        this.modeSwitch.classList.add('visible');
+        this.resetButton.classList.add('visible');
+    }
 };
 
 
@@ -2866,198 +2892,6 @@ PolaroidCamera.prototype.addModeSwitch = function() {
     this.resetButton = resetButton;
 };
 
-
-class FilmCartridgeSystem {
-    constructor() {
-        this.state = 'closed';
-        this.filmCount = 0;
-        this.maxFilms = 8;
-        this.initializeElements();
-        this.createSoundEffects();
-    }
-
-    initializeElements() {
-        const container = document.createElement('div');
-        container.className = 'film-cartridge-container';
-        
-        container.innerHTML = `
-            <div class="cartridge-door">
-                <div class="door-hinge"></div>
-                <div class="door-surface"></div>
-                <div class="door-inner">
-                    <div class="film-counter">${this.filmCount}/${this.maxFilms}</div>
-                </div>
-            </div>
-            <div class="cartridge-slot">
-                <div class="slot-guide-left"></div>
-                <div class="slot-guide-right"></div>
-                <div class="film-pack">
-                    <div class="film-dark-slide"></div>
-                    <div class="films"></div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(container);
-
-        const style = document.createElement('style');
-        style.textContent = `
-            .film-cartridge-container {
-                position: fixed;
-                bottom: 40px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 120px;
-                height: 15px;
-                perspective: 1000px;
-            }
-
-            .cartridge-door {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                background: #2a2a2a;
-                transform-origin: bottom;
-                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-                border-radius: 2px 2px 0 0;
-            }
-
-            .door-hinge {
-                position: absolute;
-                bottom: 0;
-                left: 5px;
-                right: 5px;
-                height: 2px;
-                background: #1a1a1a;
-            }
-
-            .door-surface {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(45deg, 
-                    rgba(255,255,255,0.1),
-                    transparent 40%
-                );
-            }
-
-            .door-inner {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: #1a1a1a;
-                transform: rotateX(180deg);
-                backface-visibility: hidden;
-            }
-
-            .film-counter {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: #666;
-                font-family: monospace;
-                font-size: 10px;
-            }
-
-            .cartridge-slot {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: #1a1a1a;
-                overflow: hidden;
-            }
-
-            .slot-guide-left,
-            .slot-guide-right {
-                position: absolute;
-                top: 0;
-                width: 2px;
-                height: 100%;
-                background: #333;
-            }
-
-            .slot-guide-left { left: 10px; }
-            .slot-guide-right { right: 10px; }
-
-            .film-pack {
-                position: absolute;
-                top: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 90%;
-                height: 90%;
-                background: #111;
-                transition: top 0.4s ease;
-            }
-
-            .film-dark-slide {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: #222;
-                transform-origin: right;
-                transition: transform 0.3s ease;
-            }
-
-            /* 状态类 */
-            .cartridge-door.opening {
-                transform: rotateX(-120deg);
-            }
-
-            .film-pack.loading {
-                top: 5%;
-                animation: packShake 0.3s ease;
-            }
-
-            @keyframes packShake {
-                0%, 100% { transform: translateX(-50%); }
-                25% { transform: translateX(-52%); }
-                75% { transform: translateX(-48%); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-
-    async openDoor() {
-        if (this.state !== 'closed') return;
-        
-        this.state = 'opening';
-        const door = document.querySelector('.cartridge-door');
-        
-        this.sounds.open.play().catch(() => {});
-        
-        door.classList.add('opening');
-        
-        await new Promise(resolve => setTimeout(resolve, 600));
-        this.state = 'open';
-    }
-
-
-    async ejectFilm() {
-        if (this.filmCount <= 0) return;
-        
-        this.filmCount--;
-        const counter = document.querySelector('.film-counter');
-        counter.textContent = `${this.filmCount}/${this.maxFilms}`;
-        
-        // 添加胶片弹出的动画效果
-        const ejectedFilm = document.createElement('div');
-        ejectedFilm.className = 'ejected-film';
-        document.body.appendChild(ejectedFilm);
-        
-        setTimeout(() => ejectedFilm.remove(), 1000);
-    }
-}
 
 PolaroidCamera.prototype.addReadingDevelopButton = function() {
     const developButton = document.createElement('button');
@@ -3149,7 +2983,6 @@ PolaroidCamera.prototype.developReadingFrame = function(frame, index) {
         }, 1200);
     });
 };
-
 
 PolaroidCamera.prototype.toggleMode = function(button) {
     this.isReadingMode = !this.isReadingMode;
@@ -3278,7 +3111,7 @@ PolaroidCamera.prototype.toggleMode = function(button) {
         });
 
     } else {
-        // 退出阅读模式
+        //
         const readingNav = document.querySelector('.reading-mode-nav');
         if (readingNav) {
             readingNav.classList.remove('visible');
@@ -3385,6 +3218,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.querySelector('.about-toggle');
+    const content = document.querySelector('.about-content');
+    let isOpen = false;
+
+    toggleButton.addEventListener('click', () => {
+        isOpen = !isOpen;
+        content.classList.toggle('open');
+        toggleButton.textContent = isOpen ? 'Close' : 'About';
+    });
+});
 
 
         </script>
