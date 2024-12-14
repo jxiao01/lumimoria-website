@@ -1446,7 +1446,6 @@ body.reading-mode .sidebar {
 }
 
 
-
 .main-content,
 .content-frame {
     scrollbar-width: none !important;
@@ -1736,15 +1735,26 @@ body.reading-mode .sidebar {
     animation: rainbow 4s linear infinite;
 }
 
-/* 在现有的style标签内添加 */
+
 .about-panel {
     position: fixed;
     right: 20px;
-    bottom: 20px;
+    bottom: 60px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+body.reading-mode .about-panel {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 
@@ -1800,26 +1810,41 @@ body.reading-mode .sidebar {
     margin-bottom: 16px;
 }
 
+
+.start-hint {
+    position: fixed;
+    bottom: 2rem;
+    left: 12%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    font-family: monospace;
+    font-size: 8px;
+    color: #000;
+    background: white;
+    border: 1px solid #000;
+    border-radius: 9999px;
+    z-index: 1001;
+    cursor: default;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.start-hint:hover {
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    transform: translate(calc(-50% - 1px), -1px);
+}
+
+.start-hint:active {
+    transform: translate(-50%, 0);
+    box-shadow: 0 0 0 0 rgba(0,0,0,1);
+}
+
+
+
     </style>
 </head>
 <body>
 
 
-<div class="about-panel hidden">
-    <button class="about-toggle">About</button>
-    <div class="about-content">
-        <div class="about-inner">
-            <h3>LUMIMORIA pt.2</h3>
-            <div class="about-text">
-                <p>An interactive exploration of John Roberts' seminal work on photographic theory and ethics.</p>
-                <p>This digital adaptation features six key discussions on violation, power relations, documentary practices, and the evolution of photography in the digital age.</p>
-                <p>Navigate through content using both the traditional reading mode and our unique polaroid-inspired interface.</p>
-            </div>
-        
-            </div>
-        </div>
-    </div>
-</div>
 
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height">
@@ -1878,12 +1903,6 @@ body.reading-mode .sidebar {
             <div class="mechanical-line"></div>
         </div>
         
-        <div class="gear-system">
-            <div class="gear gear-large"></div>
-            <div class="gear gear-medium"></div>
-            <div class="gear gear-small"></div>
-        </div>
-        
         <div class="optical-system">
             <div class="lens lens-outer"></div>
             <div class="lens lens-inner"></div>
@@ -1892,6 +1911,7 @@ body.reading-mode .sidebar {
     </div>
         
 
+    
 <div class="sx70-decorative-elements">
 
     <div class="viewfinder-line"></div>
@@ -1922,10 +1942,6 @@ body.reading-mode .sidebar {
     
     <div class="viewfinder-frame"></div>
     
-    <div class="prism-decoration">
-        <div class="prism-face prism-face-1"></div>
-        <div class="prism-face prism-face-2"></div>
-    </div>
     
     <div class="mechanical-seams">
         <div class="seam seam-horizontal" style="top: 20%"></div>
@@ -1936,11 +1952,7 @@ body.reading-mode .sidebar {
         <div class="seam-arc" style="bottom: 10%; right: 10%; width: 100px; height: 100px"></div>
     </div>
     
-    <div class="leather-enhanced"></div>
-    <div class="lens-cover"></div>
-    <div class="exposure-meter">
-        <div class="exposure-scale"></div>
-    </div>
+
 </div>
 
 
@@ -1982,6 +1994,23 @@ body.reading-mode .sidebar {
             <span class="date">Frame 06/06</span>
         </div>
     </div>
+
+
+    <div class="about-panel">
+        <button class="about-toggle">About</button>
+        <div class="about-content">
+            <div class="about-inner">
+                <h3>LUMIMORIA pt.2</h3>
+                <div class="about-text">
+                    <p>An interactive exploration of John Roberts' seminal work on photographic theory and ethics.</p>
+                    <p>This digital adaptation features six key discussions on violation, power relations, documentary practices, and the evolution of photography in the digital age.</p>
+                    <p>Navigate through content using both the traditional reading mode and our unique polaroid-inspired interface.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
 
     <div class="main-content">
         <div class="content-frame">
@@ -2582,7 +2611,7 @@ handleSystemClick = function() {
     frame.style.visibility = 'visible';
     frame.style.opacity = '0';
     
-    // 设置内容可见
+    //
     const content = frame.querySelector('.content');
     if (content) {
         content.style.visibility = 'visible';
@@ -3227,6 +3256,32 @@ document.addEventListener('DOMContentLoaded', () => {
         isOpen = !isOpen;
         content.classList.toggle('open');
         toggleButton.textContent = isOpen ? 'Close' : 'About';
+    });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const viewButton = document.querySelector('.viewfinder-toggle');
+    const interfaceElement = document.querySelector('.sx70-interface-elements');
+    let startHint = null;
+
+    viewButton.addEventListener('click', () => {
+        if (!startHint) {
+            startHint = document.createElement('div');
+            startHint.className = 'start-hint';
+            startHint.textContent = 'double-click image to start';
+            document.body.appendChild(startHint);
+        }
+    });
+
+    interfaceElement.addEventListener('click', () => {
+        if (startHint) {
+            startHint.style.opacity = '0';
+            setTimeout(() => {
+                startHint.remove();
+                startHint = null;
+            }, 300);
+        }
     });
 });
 
